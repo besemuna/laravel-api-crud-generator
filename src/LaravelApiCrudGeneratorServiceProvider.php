@@ -14,6 +14,7 @@ class LaravelApiCrudGeneratorServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->make('Besemuna\LaravelApiCrudGenerator\TestClass');
+
         $this->commands(
             'Besemuna\LaravelApiCrudGenerator\Command\GenerateCommand'
         );
