@@ -1,0 +1,11 @@
+{
+    "name": "besemuna/laravel-api-crud-generator",
+    "description": "This package generates crud endpoints using laravel.",
+    "authors": [
+        {
+            "name": "Samuel Besemuna Adjei",
+            "email": "besemuna@gmail.com"
+        }
+    ],
+    "require": {}
+}
