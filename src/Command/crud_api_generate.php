@@ -86,6 +86,7 @@ class GenerateCommand extends Command
             $validationArray = array();
             $migrationArray = array();
 
+            # process fields
             foreach($json['fields'] as $key) {
                 # migration array
                 $array = [
@@ -106,8 +107,13 @@ class GenerateCommand extends Command
                 }
             }
 
-            $this->setValidationValues($validationArray);
-            $this->setMigrationValues($migrationArray);
+            # process relationships
+            if (isset($json["relationships"])) {
+                echo 'processing relationships';
+            }
+
+            // $this->setValidationValues($validationArray);
+            // $this->setMigrationValues($migrationArray);
 
         }catch(\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
             echo 'file does not exist';
@@ -139,6 +145,22 @@ class GenerateCommand extends Command
      * @return bool
      */
     public function setMigrationValues($migrationArray) {
+        $schemaCreate = "";
 
+        foreach($migrationArray as $key) {
+            $schemaCreate .= '$table' ."->{$key["type"]}('{$key['name']}')";
+
+            if (isset($key["modifier"])) {
+                $schemaCreate .= "->{$key["modifier"]}();\n";
+            }else {
+                $schemaCreate .= "; \n";
+            }
+        }
+
+        # replace with double quotes and remove last comma
+        $schemaCreate = str_replace("'", '"', $schemaCreate);
+
+        $this->schemaCreate = $schemaCreate;
+        return true;
     }
 }
