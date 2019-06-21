@@ -1,0 +1,28 @@
+{
+  "fields": [
+    {
+      "name":"user_id",
+      "type":"string",
+      "modifier":"nullable",
+      "sanitization": "trim|remove_slashes",
+      "validation": "required",
+      "foreign_key": {
+          "references": "id",
+          "on": "users",
+          "onDelete": "cascade"
+        }
+    },
+    {
+      "name":"amount",
+      "type":"integer",
+      "modifier":"nullable"
+    }
+  ],
+  "relationships": [
+        {
+            "name": "profile",
+            "type": "belongsTo",
+            "class": "App\\User"
+        }
+    ]
+}

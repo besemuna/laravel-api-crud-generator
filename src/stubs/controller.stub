@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\{{modelNameSingularUpperFirst}};
+
+class {{modelNameSingularUpperFirst}}Class extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        ${{modelNamePluralLowerAll}} = {{modelNameSingularUpperFirst}}::get();
+
+        return ${{modelNamePluralLowerAll}};
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        {{validationRules}}
+        ${{modelNameSingularLowerAll}} = {{modelNameSingularUpperFirst}}::create($request->all());
+
+        return response()->json(${{modelNameSingularLowerAll}}, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        ${{modelNameSingularLowerAll}} = {{modelNameSingularUpperFirst}}::findOrFail($id);
+
+        return ${{modelNameSingularLowerAll}};
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param  int  $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        {{validationRules}}
+
+        ${{modelNameSingularLowerAll}} = {{modelNameSingularUpperFirst}}::findOrFail($id);
+        ${{modelNameSingularLowerAll}}->update($request->all());
+
+        return response()->json(${{modelNameSingularLowerAll}}, 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        {{modelNameSingularUpperFirst}}::destroy($id);
+
+        return response()->json(null, 204);
+    }
+}

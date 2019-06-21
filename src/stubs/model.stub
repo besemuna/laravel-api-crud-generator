@@ -1,0 +1,14 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+{{useSoftDeletes}}
+
+class {{modelNameSingularUpperFirst}} extends Model
+{
+    {{softDeletes}}
+
+
+    {{relationships}}
+}
