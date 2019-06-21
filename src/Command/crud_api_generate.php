@@ -131,8 +131,6 @@ class GenerateCommand extends Command
 
         $this->addValidation = $addValidation;
 
-        echo $this->addValidation;
-
     }
 
     /**
