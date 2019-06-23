@@ -319,4 +319,27 @@ public function {{name}}() {
         File::put(base_path("database/migrations/$fileName.php"), $migration);
         return true;
     }
+
+    /**
+     * Append route file
+     * @return bool
+     */
+    public function appendRoute() {
+        $routes = "Route::resource('{{modelNameSingularLowerAll}}', '{{ControllerName}}');";
+        $routes = str_replace(
+            [
+                "{{modelNameSingularLowerAll}}",
+                "{{ControllerName}}"
+            ],
+            [
+                str_singular(strtolower($this->modelName)),
+                str_singular(ucfirst($this->modelName)) . "Controller"
+
+            ],
+            $routes
+        );
+        $routes = str_replace("'", '"', $routes);
+        File::append(base_path("routes/api.php"), "\n$routes");
+        return true;
+    }
 }
