@@ -78,6 +78,7 @@ class GenerateCommand extends Command
         $this->buildModel();
 
         # build controller
+        $this->buildController();
 
         # build migration file
 
@@ -254,6 +255,37 @@ public function {{name}}() {
         }
 
         $migration = str_replace($replaceSearch, $replaceWith, $stub);
-        echo $migration;
+
+        File::put(app_path("/". str_singular(ucfirst($this->modelName)). ".php"), $migration);
+    }
+
+    /**
+     * Builds a controller
+     * @return string
+     */
+    public function buildController() {
+        $stub = $this->getStub("controller");
+
+        $replaceSearch = [
+            "{{modelNameSingularUpperFirst}}",
+            "{{modelNamePluralLowerAll}}",
+            "{{modelNameSingularLowerAll}}",
+            "{{validationRules}}"
+        ];
+
+        $replaceWith = [
+            str_singular(ucfirst($this->modelName)),
+            str_plural(strtolower($this->modelName)),
+            str_singular(strtolower($this->modelName)),
+            ""
+        ];
+
+        if ($this->addValidation !== null) {
+            $replaceWith[3] = $this->addValidation;
+        }
+
+        $controller = str_replace($replaceSearch, $replaceWith, $stub);
+        echo $controller;
+        File::put(base_path("app/Http/Controllers/". str_singular(ucfirst($this->modelName)). "Controller.php"), $controller);
     }
 }
