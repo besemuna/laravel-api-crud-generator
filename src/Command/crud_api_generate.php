@@ -25,6 +25,9 @@ class GenerateCommand extends Command
     protected $description = 'This command generate crud endpoints on the fly!';
 
     /** @var string  */
+    protected $modelName;
+
+    /** @var string  */
     protected $schemaCreate;
 
     /** @var string  */
@@ -35,6 +38,9 @@ class GenerateCommand extends Command
 
     /** @var string  */
     protected $relationships;
+
+    /** @var string  */
+    protected $softDeletes = false;
 
 
     /**
@@ -56,17 +62,20 @@ class GenerateCommand extends Command
     {
         # get name, model name, migration name, table name
         $name = $this->argument('name');
-        $modelName = str_singular(ucfirst($name));
-        $migrationName = str_plural(snake_case($name));
-        $tableName = $migrationName;
+        $this->modelName = $name;
 
         # get and process fields and foreign keys
         $fields = $this->processFieldsFromFile($this->option('fields'));
 
+        # process soft deletes
+        if ($this->option('soft_deletes')) {
+            $this->softDeletes = true;
+        }
 
         # set all info needed
 
         # build model
+        $this->buildModel();
 
         # build controller
 
@@ -160,6 +169,11 @@ class GenerateCommand extends Command
             }
         }
 
+        # softdeletes
+        if ($this->option('soft_deletes')) {
+            $schemaCreate .= '$table->softDeletes();';
+        }
+
         # replace with double quotes and remove last comma
         $schemaCreate = str_replace("'", '"', $schemaCreate);
 
@@ -201,5 +215,45 @@ public function {{name}}() {
         $this->relationships = $rels;
 
 
+    }
+
+    /**
+     * Gets a stub
+     * @param string $stub name of the stub you want to retrieve
+     * @return string
+     */
+    public function getStub($stub) {
+        $stubb = File::get(base_path("packages/besemuna/LaravelApiCrudGenerator/src/stubs/$stub.stub"));
+        return $stubb;
+    }
+
+    /**
+     * Builds a model
+     * @return string
+     */
+    public function buildModel() {
+        $stub = $this->getStub("model");
+
+        $replaceSearch = [
+            "{{useSoftDeletes}}",
+            "{{softDeletes}}",
+            "{{relationships}}",
+            "{{modelNameSingularUpperFirst}}"
+        ];
+
+        $replaceWith = [
+            "",
+            "",
+            $this->relationships,
+            str_singular(ucfirst($this->modelName)),
+        ];
+
+        if ($this->softDeletes) {
+            $replaceWith[0] = "use Illuminate\Database\Eloquent\SoftDeletes;";
+            $replaceWith[1] = "use SoftDeletes;";
+        }
+
+        $migration = str_replace($replaceSearch, $replaceWith, $stub);
+        echo $migration;
     }
 }

@@ -9,6 +9,5 @@ class {{modelNameSingularUpperFirst}} extends Model
 {
     {{softDeletes}}
 
-
     {{relationships}}
 }
