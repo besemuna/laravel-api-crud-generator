@@ -33,6 +33,9 @@ class GenerateCommand extends Command
     /** @var string  */
     protected $updateValidation;
 
+    /** @var string  */
+    protected $relationships;
+
 
     /**
      * Create a new command instance.
@@ -109,7 +112,7 @@ class GenerateCommand extends Command
 
             # process relationships
             if (isset($json["relationships"])) {
-                echo 'processing relationships';
+                $this->setRelationshipValues($json["relationships"]);
             }
 
             // $this->setValidationValues($validationArray);
@@ -162,5 +165,41 @@ class GenerateCommand extends Command
 
         $this->schemaCreate = $schemaCreate;
         return true;
+    }
+
+    /**
+     * Process and sets all values needed for final insertion of relationships
+     * @param array $migrationArray Array of all info needed to set required values
+     * @return bool
+     */
+    public function setRelationshipValues($relationships) {
+        $rels = "";
+        foreach ($relationships as $relationship) {
+            $template = '
+public function {{name}}() {
+    return $this->{{type}}("{{class}}");
+}
+            ';
+
+            $rels .= str_replace(
+                [
+                    "{{name}}",
+                    "{{type}}",
+                    "{{class}}"
+                ],
+                [
+                  $relationship["name"],
+                  $relationship["type"],
+                  $relationship["class"]
+                ],
+                $template
+            );
+            $rels .= "\n";
+
+        }
+
+        $this->relationships = $rels;
+
+
     }
 }
