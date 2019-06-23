@@ -81,8 +81,10 @@ class GenerateCommand extends Command
         $this->buildController();
 
         # build migration file
+        $this->buildMigration();
 
         # add route file
+        $this->appendRoute();
     }
 
     /**
@@ -125,8 +127,8 @@ class GenerateCommand extends Command
                 $this->setRelationshipValues($json["relationships"]);
             }
 
-            // $this->setValidationValues($validationArray);
-            // $this->setMigrationValues($migrationArray);
+            $this->setValidationValues($validationArray);
+            $this->setMigrationValues($migrationArray);
 
         }catch(\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
             echo 'file does not exist';
@@ -230,7 +232,7 @@ public function {{name}}() {
 
     /**
      * Builds a model
-     * @return string
+     * @return bool
      */
     public function buildModel() {
         $stub = $this->getStub("model");
@@ -257,11 +259,12 @@ public function {{name}}() {
         $migration = str_replace($replaceSearch, $replaceWith, $stub);
 
         File::put(app_path("/". str_singular(ucfirst($this->modelName)). ".php"), $migration);
+        return true;
     }
 
     /**
      * Builds a controller
-     * @return string
+     * @return bool
      */
     public function buildController() {
         $stub = $this->getStub("controller");
@@ -285,7 +288,35 @@ public function {{name}}() {
         }
 
         $controller = str_replace($replaceSearch, $replaceWith, $stub);
-        echo $controller;
         File::put(base_path("app/Http/Controllers/". str_singular(ucfirst($this->modelName)). "Controller.php"), $controller);
+        return true;
+    }
+
+    /**
+     * Builds a migration file
+     * @return bool
+     */
+    public function buildMigration() {
+        $stub = $this->getStub("migration");
+
+        $replaceSearch = [
+            "{{modelNamePluralFirstUpper}}",
+            "{{modelNamePluralLowerAll}}",
+            "{{SchemaCreate}}",
+        ];
+
+        $replaceWith = [
+            str_plural(ucfirst($this->modelName)),
+            str_plural(strtolower($this->modelName)),
+            $this->schemaCreate
+        ];
+
+
+
+        $migration = str_replace($replaceSearch, $replaceWith, $stub);
+        $fileName = date("Y_m_d_U") . "_create_" . str_plural(strtolower($this->modelName)) . "_table";
+
+        File::put(base_path("database/migrations/$fileName.php"), $migration);
+        return true;
     }
 }
